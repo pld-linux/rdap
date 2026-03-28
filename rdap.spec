@@ -1,27 +1,28 @@
 Summary:	Registration Data Access Protocol (RDAP) client
 Name:		rdap
 Version:	0.9.1
-Release:	0.1
+Release:	1
 License:	MIT
 Group:		Networking/Utilities
 Source0:	https://github.com/openrdap/rdap/archive/refs/tags/v%{version}.tar.gz
 # Source0-md5:	0e32caf6e63607dce4376bea3fbd863a
+# cd rdap-%{version} && go mod vendor && cd .. && tar cJf rdap-vendor-%{version}.tar.xz rdap-%{version}/vendor
+Source1:	%{name}-vendor-%{version}.tar.xz
 URL:		https://www.openrdap.org/
-BuildRequires:	golang
-ExclusiveArch:  %go_arches
+BuildRequires:	golang >= 1.19
+ExclusiveArch:	%go_arches
 BuildRoot:	%{tmpdir}/%{name}-%{version}-root-%(id -u -n)
 
-%define         _debugsource_packages   0
+%undefine	_debugsource_packages
 
 %description
 Registration Data Access Protocol (RDAP) client.
 
 %prep
-%setup -q
+%setup -q -a1
 
 %build
-
-%__go build -v -o bin/rdap
+%__go build -v -mod=vendor -o bin/rdap ./cmd/rdap
 
 %install
 rm -rf $RPM_BUILD_ROOT
